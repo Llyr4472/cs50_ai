@@ -78,7 +78,25 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    
+    input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
+
+    model = tf.keras.Sequential()
+
+    #convolution and pooling layers 1
+    model.add(tf.keras.layers.Conv2D(32,(3,3),activation="relu",input_shape=input_shape))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(3,3)))
+
+    #Flaten units
+    model.add(tf.keras.layers.Flatten())
+
+    #hidden layer
+    model.add(tf.keras.layers.Dense(64,input_shape=input_shape, activation="relu"))
+
+    #dropout layer
+    model.add(tf.keras.layers.Dropout(0.5))
+
+    #output layer
+    model.add(tf.keras.layers.Dense(NUM_CATEGORIES-1,activation="sigmoid"))
 
 
 if __name__ == "__main__":
