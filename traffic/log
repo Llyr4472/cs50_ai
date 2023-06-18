@@ -1,0 +1,149 @@
+#Using small data set for testing
+
+Test1: 
+    filters_used = 32
+    pool_size = 3x3
+    conv_and_pool_layers = 1
+    hidden_layer_units = 64
+    hidden_layers = 1
+    dropout = 50%
+    accuracy=0.827
+    time = 1s/epoch
+
+Test2:
+    filters_used=32
+    pool_size = 3x3
+    conv_and_pool_layers = 1
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 1
+    time = 770ms/epoch
+
+
+#Using large data set for testing
+
+Test3:
+    filters_used = 32
+    pool_size = 3x3
+    conv_and_pool_layers = 1
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 0.945
+    time = 1s/epoch
+
+Test4:
+    filters_used = 32
+    pool_size = 3x3
+    conv_and_pool_layers = 2 #as: conv__layer,pool_layer,conv__layer,pool_layer
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 0.785
+    time = 5s/epoch
+
+Test5:
+    filters_used = 32
+    pool_size = 3x3
+    conv_and_pool_layers = 1
+    hidden_layer_units = 128
+    hidden_layers = 2
+    dropout = 50%
+    accuracy = 0.601
+    time = 7s/epoch
+
+Test6:
+    filters_used = 32
+    pool_size = 2x2
+    conv_and_pool_layers = 1
+    hidden_layer_units = 192
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 0.054
+    time = 7s/epoch
+
+Test7:
+    filters_used = 32
+    pool_size = 4x4
+    conv_and_pool_layers = 1
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 0.055
+    time = 7s/epoch
+
+Test8:
+    filters_used = 32
+    pool_size = 3x3
+    conv_and_pool_layers = 1
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 25%
+    accuracy = 0.9388
+    time = 6s/epoch
+
+Test9:
+    filters_used = 32
+    pool_size = 2x2
+    pool_layers = 2
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 0.536
+    time = 8s/epoch
+
+Test10:
+    filters_used = 48
+    pool_size = 3x3
+    conv_and_pool_layers = 1
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 0.0554
+    time = 18s/epoch
+
+Test11:
+    filters_used = 48
+    pool_size = 3x3
+    conv_and_pool_layers = 1
+    hidden_layer_units = 150
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 0.0552
+    time = 7s/epoch
+
+# Didnt log few tests but all of them resulted is accuracy<0.5
+
+Test12:
+    filters_used = 32
+    pool_size = 2x2
+    conv__layers = 2 #as: conv__layer,conv__layer,pool_layer
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 50%
+    accuracy = 0.974
+    time = 14s/epoch
+
+Test13:
+    filters_used = 32
+    pool_size = 3x3
+    conv_layers = 2
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 12%
+    accuracy = 0.9368
+    time =14s/epoch
+
+Test14:
+    filters_used = 32
+    pool_size = 3x3
+    conv_and_pool_layers = 2
+    hidden_layer_units = 128
+    hidden_layers = 1
+    dropout = 25%
+    accuracy = 0.9287
+    time = 14s/epoch
+
+
+Conclusion: Test12 produced the best result.
