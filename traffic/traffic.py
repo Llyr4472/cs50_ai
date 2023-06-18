@@ -39,8 +39,9 @@ def main():
     model.evaluate(x_test,  y_test, verbose=2)
 
     # Save model to file
-    if len(sys.argv) == 3:
-        filename = sys.argv[2]
+    #if len(sys.argv) == 3:
+    if True:
+        filename = "model"#sys.argv[2]
         model.save(filename)
         print(f"Model saved to {filename}.")
 
