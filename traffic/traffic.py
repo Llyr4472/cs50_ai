@@ -21,7 +21,7 @@ def main():
 
     # Get image arrays and labels for all image files
     images, labels = load_data(sys.argv[1])"""
-    images, labels = load_data("gtsrb")
+    images, labels = load_data("gtsrb-small")
 
     # Split data into training and testing sets
     labels = tf.keras.utils.to_categorical(labels)
@@ -59,7 +59,17 @@ def load_data(data_dir):
     be a list of integer labels, representing the categories for each of the
     corresponding `images`.
     """
-    raise NotImplementedError
+    images = []
+    labels = []
+    for category in os.listdir(data_dir):
+        label = category
+        for image in os.listdir(os.path.join(data_dir,category)):
+            with open(os.path.join(data_dir,category,image)) as img:
+                image = cv2.imread(img,mode="RGB")
+                image = cv2.resize(image,IMG_HEIGHT,IMG_WIDTH)
+                images.append(image)
+                labels.append(label)
+    return images, labels
 
 
 def get_model():
@@ -68,7 +78,7 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-    raise NotImplementedError
+    
 
 
 if __name__ == "__main__":
