@@ -15,13 +15,12 @@ TEST_SIZE = 0.4
 
 def main():
 
-    """# Check command-line arguments
+    # Check command-line arguments
     if len(sys.argv) not in [2, 3]:
         sys.exit("Usage: python traffic.py data_directory [model.h5]")
 
     # Get image arrays and labels for all image files
-    images, labels = load_data(sys.argv[1])"""
-    images, labels = load_data("gtsrb-small")
+    images, labels = load_data(sys.argv[1])
 
     # Split data into training and testing sets
     labels = tf.keras.utils.to_categorical(labels)
@@ -39,9 +38,8 @@ def main():
     model.evaluate(x_test,  y_test, verbose=2)
 
     # Save model to file
-    #if len(sys.argv) == 3:
-    if True:
-        filename = "model"#sys.argv[2]
+    if len(sys.argv) == 3:
+        filename = sys.argv[2]
         model.save(filename)
         print(f"Model saved to {filename}.")
 
@@ -62,14 +60,15 @@ def load_data(data_dir):
     """
     images = []
     labels = []
-    for category in os.listdir(data_dir):
-        label = category
-        for image in os.listdir(os.path.join(data_dir,category)):
-            with open(os.path.join(data_dir,category,image)) as img:
-                image = cv2.imread(img,mode="RGB")
-                image = cv2.resize(image,IMG_HEIGHT,IMG_WIDTH)
-                images.append(image)
-                labels.append(label)
+    for category in range(NUM_CATEGORIES):
+        label = str(category)
+        for image in os.listdir(os.path.join(data_dir,label)):
+            img_path = os.path.join(data_dir,label,image)
+            image = cv2.imread(img_path)
+            image = cv2.resize(image,(IMG_HEIGHT,IMG_WIDTH))
+            image = np.array(image)
+            images.append(image)
+            labels.append(label)
     return images, labels
 
 
@@ -81,24 +80,36 @@ def get_model():
     """
     input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)
 
-    model = tf.keras.Sequential()
+    model = tf.keras.Sequential([
 
-    #convolution and pooling layers 1
-    model.add(tf.keras.layers.Conv2D(32,(3,3),activation="relu",input_shape=input_shape))
-    model.add(tf.keras.layers.MaxPooling2D(pool_size=(3,3)))
+        #convolution and pooling layers 1
+        tf.keras.layers.Conv2D(32,(3,3),activation="relu",input_shape=input_shape),
+        tf.keras.layers.MaxPooling2D(pool_size=(3,3)),
 
-    #Flaten units
-    model.add(tf.keras.layers.Flatten())
+        #convolution and pooling layers 2
+        tf.keras.layers.Conv2D(32,(3,3),activation="relu",input_shape=input_shape),
+        tf.keras.layers.MaxPooling2D(pool_size=(3,3)),
 
-    #hidden layer
-    model.add(tf.keras.layers.Dense(64,input_shape=input_shape, activation="relu"))
+        #Flaten units
+        tf.keras.layers.Flatten(),
 
-    #dropout layer
-    model.add(tf.keras.layers.Dropout(0.5))
+        #hidden layer
+        tf.keras.layers.Dense(128,input_shape=input_shape, activation="relu"),
 
-    #output layer
-    model.add(tf.keras.layers.Dense(NUM_CATEGORIES-1,activation="sigmoid"))
+        #dropout layer
+        tf.keras.layers.Dropout(0.5),
 
+        #output layer
+        tf.keras.layers.Dense(NUM_CATEGORIES,activation="softmax"),
+    ])
+
+    #compile and return
+    model.compile(
+        optimizer="adam",
+        loss = "categorical_crossentropy",
+        metrics = ["accuracy"],
+    )   
+    return model
 
 if __name__ == "__main__":
     main()
