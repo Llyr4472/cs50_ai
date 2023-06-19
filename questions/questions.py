@@ -1,8 +1,8 @@
 import nltk
 import sys
 import os
-from string import punctuation
-from math import log
+import string
+import math
 
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
@@ -51,11 +51,13 @@ def load_files(directory):
     Given a directory name, return a dictionary mapping the filename of each
     `.txt` file inside that directory to the file's contents as a string.
     """
-    files = {}
+    dictionary = {}
+
     for file in os.listdir(directory):
-        with open(os.path.join(directory, file),"r",encoding="utf-8") as f:
-            files[file] = f.read()
-    return files
+        with open(os.path.join(directory, file), encoding="utf-8") as ofile:
+            dictionary[file] = ofile.read()
+
+    return dictionary
 
 
 def tokenize(document):
@@ -66,12 +68,12 @@ def tokenize(document):
     Process document by coverting all words to lowercase, and removing any
     punctuation or English stopwords.
     """
-    document = document.lower()
-    tokens = nltk.tokenize.word_tokenize(document)
-    for token in tokens.copy():
-        if token in punctuation or token in nltk.corpus.stopwords.words("english"):
-            tokens.remove(token)
-    return tokens
+
+    tokenized = nltk.tokenize.word_tokenize(document.lower())
+
+    final_list = [x for x in tokenized if x not in string.punctuation and x not in nltk.corpus.stopwords.words("english")]
+
+    return final_list
 
 
 def compute_idfs(documents):
@@ -82,17 +84,20 @@ def compute_idfs(documents):
     Any word that appears in at least one of the documents should be in the
     resulting dictionary.
     """
-    wf = {}
-    idfs = {}
-    for document in documents:
-        for word in documents[document]:
-            if word in wf.keys():
-                wf[word] += 1
-            else:
-                wf[word] = 1
-    for word in wf:
-        idfs[word] = log(len(documents)/wf[word])
-    return idfs
+    idf_dictio = {}
+    doc_len = len(documents)
+
+    unique_words = set(sum(documents.values(), []))
+
+    for word in unique_words:
+        count = 0
+        for doc in documents.values():
+            if word in doc:
+                count += 1
+
+        idf_dictio[word] = math.log(doc_len/count)
+
+    return idf_dictio
 
 
 def top_files(query, files, idfs, n):
@@ -102,13 +107,17 @@ def top_files(query, files, idfs, n):
     to their IDF values), return a list of the filenames of the the `n` top
     files that match the query, ranked according to tf-idf.
     """
-    tf_idf = {}
-    for file in files:
-        tf_idf[file] = 0
+    scores = {}
+    for filename, filecontent in files.items():
+        file_score = 0
         for word in query:
-            tf= files[file].count(word)
-            tf_idf[file] += idfs[word] + tf
-    return sorted(tf_idf)[:n]
+            if word in filecontent:
+                file_score += filecontent.count(word) * idfs[word]
+        if file_score != 0:
+            scores[filename] = file_score
+
+    sorted_by_score = [k for k, v in sorted(scores.items(), key=lambda x: x[1], reverse=True)]
+    return sorted_by_score[:n]
 
 
 def top_sentences(query, sentences, idfs, n):
@@ -119,14 +128,20 @@ def top_sentences(query, sentences, idfs, n):
     the query, ranked according to idf. If there are ties, preference should
     be given to sentences that have a higher query term density.
     """
-    ranked_sentences = {}
-    for sentence in sentences:
-        idf,wd = 0.0,0.0
+    scores = {}
+    for sentence, sentwords in sentences.items():
+        score = 0
         for word in query:
-            idf += idfs[word]
-            wd += sentence.count(word)/len(sentence)
-        ranked_sentences[sentence] = (idf,wd)
-    return sorted(ranked_sentences,reverse=True)[:n]
+            if word in sentwords:
+                score += idfs[word]
+
+        if score != 0:
+            density = sum([sentwords.count(x) for x in query]) / len(sentwords)
+            scores[sentence] = (score, density)
+
+    sorted_by_score = [k for k, v in sorted(scores.items(), key=lambda x: (x[1][0], x[1][1]), reverse=True)]
+
+    return sorted_by_score[:n]
 
 
 if __name__ == "__main__":
